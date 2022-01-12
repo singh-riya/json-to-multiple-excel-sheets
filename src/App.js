@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+// import XlsPopulate from "./screens/XlsPopulate";
+// import HomeScreen from "./screens/HomeScreen";
+// import XlsDoc from "./screens/XlsDoc";
+import "./styles.css";
 
-function App() {
+export default function App() {
+  const downloadTimesheet = async () => {
+    const timesheet = await fetch("http://localhost:4000/timesheet", {
+      method: "GET",
+    }).then((res) => res.json());
+
+    const downloadLink = document.createElement("a");
+    downloadLink.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${timesheet.fileBase64}`;
+    downloadLink.download = "timesheet.xlsx";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {/* <XlsPopulate /> */}
+      <hr />
+      {/* <XlsDoc /> */}
+      <hr />
+      {/* <HomeScreen /> */}
+      <button onClick={downloadTimesheet} style={{ fontSize: 60 }}>
+        Download Timesheet
+      </button>
     </div>
   );
 }
-
-export default App;
