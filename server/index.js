@@ -106,6 +106,7 @@ app.get("/timesheet", async (req, res) => {
     message: "Timesheet.xlsx created",
     fileBase64,
   });
+  fs.unlinkSync("Timesheet.xlsx");
 });
 
 app.listen(4000, () => {
