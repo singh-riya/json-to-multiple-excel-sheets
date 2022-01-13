@@ -1,63 +1,30 @@
 import express from "express";
 import XlsPopulate from "xlsx-populate";
 import mockData from "../src/data/mockData.js";
-import fs from "fs";
 import cors from "cors";
 const app = express();
 app.use(cors());
 
-const headCell = ["A", "B", "C", "D", "E"];
+const headCell = [
+  { column: "A", width: 15, text: "Sr No." },
+  { column: "B", width: 15, text: "Date" },
+  { column: "C", width: 15, text: "Feature" },
+  { column: "D", width: 50, text: "Subject" },
+  { column: "E", width: 10, text: "Hours" },
+];
 
-const borderStyle = {
-  style: "thin",
-  color: {
-    type: "pattern",
-    pattern: "solid",
-    foreground: {
-      rgb: "FFA50000",
-    },
-    background: {
-      theme: 1,
-      tint: 1,
-    },
-  },
-};
-
-const addStyles = (workbook, index, isWeekend, isHoliday, onLeave) => {
-  headCell.forEach((alpha) => {
-    workbook.cell(alpha + index).style("border", {
-      top: borderStyle,
-      left: borderStyle,
-      bottom: borderStyle,
-      right: borderStyle,
-    });
+const addStyles = (sheet, index, isWeekend, isHoliday, onLeave) => {
+  headCell.forEach(({ column, width }) => {
+    sheet.column(column).width(width);
+    sheet.cell(column + index).style("border", true);
+    sheet.cell(column + "1").style("fill", "4472c4"); // fill header (first row) background color
 
     if (isWeekend) {
-      workbook.cell(alpha + index).style("fill", {
-        type: "pattern",
-        pattern: "solid",
-        foreground: {
-          rgb: "FFA500",
-        },
-        background: {
-          theme: 1,
-          tint: 1,
-        },
-      });
+      sheet.cell(column + index).style("fill", "FFA500");
     }
 
     if (isHoliday || onLeave) {
-      workbook.cell(alpha + index).style("fill", {
-        type: "pattern",
-        pattern: "solid",
-        foreground: {
-          rgb: "FFD700",
-        },
-        background: {
-          theme: 1,
-          tint: 1,
-        },
-      });
+      sheet.cell(column + index).style("fill", "FFD700");
     }
   });
 };
@@ -68,20 +35,21 @@ const capitalize = (s) => {
 };
 
 app.get("/timesheet", async (req, res) => {
-  fs.existsSync("Timesheet.xlsx") && fs.unlinkSync("Timesheet.xlsx");
-  await XlsPopulate.fromBlankAsync().then(async (workbook) => {
-    mockData.forEach((person) => {
-      const ws = workbook.addSheet(capitalize(person.name));
-      ws.cell("A1").value("Sr No.");
-      ws.cell("B1").value("Date");
-      ws.cell("C1").value("Feature");
-      ws.cell("D1").value("Subject");
-      ws.cell("E1").value("Hours");
-      addStyles(ws, 1);
+  const workbook = await XlsPopulate.fromBlankAsync();
 
-      person.timesheet.sort((a, b) =>
-      a.date > b.date ? 1 : -1
-    ).forEach((ts, i) => {
+  mockData.forEach((person) => {
+    const ws = workbook.addSheet(capitalize(person.name));
+
+    headCell.forEach(({ column, text }) => {
+      ws.cell(column + "1")
+        .value(capitalize(text))
+        .style("bold", true);
+    });
+    addStyles(ws, 1);
+
+    person.timesheet
+      .sort((a, b) => (a.date > b.date ? 1 : -1))
+      .forEach((ts, i) => {
         const { date, feature, subject, hours, isWeekend, isHoliday, onLeave } =
           ts;
         ws.cell(`A${i + 2}`).value(i + 1);
@@ -92,21 +60,27 @@ app.get("/timesheet", async (req, res) => {
 
         addStyles(ws, i + 2, isWeekend, isHoliday, onLeave);
       });
-    });
-
-    workbook.sheet(0).delete(); // delete default sheet
-
-    await workbook.toFileAsync("Timesheet.xlsx");
-  });
-  const fileBase64 = fs.readFileSync("Timesheet.xlsx", {
-    encoding: "base64",
   });
 
-  res.json({
-    message: "Timesheet.xlsx created",
-    fileBase64,
-  });
-  fs.unlinkSync("Timesheet.xlsx");
+  workbook.sheet(0).delete(); // delete default sheet
+
+  const blob = await workbook.outputAsync();
+
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=Timesheet.xlsx");
+  res.send(blob);
+
+  // alternate approach to download file
+  // const fileBase64 = await workbook.outputAsync({
+  //   type: "base64",
+  // });
+  // res.json({
+  //   message: "Timesheet.xlsx created",
+  //   fileBase64,
+  // });
 });
 
 app.listen(4000, () => {
