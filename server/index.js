@@ -1,6 +1,6 @@
 import express from "express";
 import XlsPopulate from "xlsx-populate";
-import mockData from "../src/data/mockData.js";
+import mockData from "./data/mockData.js";
 import cors from "cors";
 const app = express();
 app.use(cors());
@@ -34,7 +34,7 @@ const capitalize = (s) => {
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
-app.get("/timesheet", async (req, res) => {
+app.get("/timesheet/download", async (req, res) => {
   const workbook = await XlsPopulate.fromBlankAsync();
 
   mockData.forEach((person) => {
@@ -72,16 +72,15 @@ app.get("/timesheet", async (req, res) => {
   );
   res.setHeader("Content-Disposition", "attachment; filename=Timesheet.xlsx");
   res.send(blob);
-
-  // alternate approach to download file
-  // const fileBase64 = await workbook.outputAsync({
-  //   type: "base64",
-  // });
-  // res.json({
-  //   message: "Timesheet.xlsx created",
-  //   fileBase64,
-  // });
 });
+
+app.get("/timesheet", (req, res) => {
+  const { user } = req.query;
+  const result = mockData.find((person) => (person?.id) === parseInt(user));
+  console.log({user})
+  console.log({result})
+  res.json(result);
+})
 
 app.listen(4000, () => {
   console.log("Server listening on port 4000!");
