@@ -8,16 +8,22 @@
 
 }
 
-table, th, td, tr, .cellBorder {
+table,thead,tbody {
   border: 1px solid black;
-  padding: 5px;
 }
 
-label, select {
+td, th { 
+	padding: 10px; 
+	border: 1px solid #ccc; 
+	text-align: left; 
+	font-size: 18px;
+	}
+
+label {
   font-size: 20px;
   font-weight: bold;
   padding: 10px;
-  margin: 20px;
+  margin: 10px;
 }
 
 .download-table-xls-button {
