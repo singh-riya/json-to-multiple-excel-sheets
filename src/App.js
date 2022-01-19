@@ -26,29 +26,29 @@ export default function App() {
   /**
    * @description This function downdloads the file from blob recieved from server
    */
-  const downloadTimesheet = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/timesheet/download", {
-        method: "GET",
-      });
-      const timesheet = await response.blob();
-      const url = window.URL.createObjectURL(timesheet);
-      const downloadLink = document.createElement("a");
-      downloadLink.href = url;
-      downloadLink.download = "Timesheet.xlsx";
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const downloadTimesheet = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:4000/timesheet/download", {
+  //       method: "GET",
+  //     });
+  //     const timesheet = await response.blob();
+  //     const url = window.URL.createObjectURL(timesheet);
+  //     const downloadLink = document.createElement("a");
+  //     downloadLink.href = url;
+  //     downloadLink.download = "Timesheet.xlsx";
+  //     document.body.appendChild(downloadLink);
+  //     downloadLink.click();
+  //     document.body.removeChild(downloadLink);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const timesheetData = async () => {
     try {
-      const response = await fetch("http://localhost:4000/timesheet?user=7", {
-        method: "GET",
-      }).then((res) => res.json());
+      // const response = await fetch("http://localhost:4000/timesheet?user=7", {
+      //   method: "GET",
+      // }).then((res) => res.json());
 
       // setData(response);
       setData(generateMockDataFor30Days());
@@ -63,9 +63,9 @@ export default function App() {
 
   return (
     <div className="App">
-      <button onClick={downloadTimesheet} style={{ fontSize: 60 }}>
+      {/* <button onClick={downloadTimesheet} style={{ fontSize: 60 }}>
         Download Timesheet
-      </button>
+      </button> */}
       <Dashboard data={data} />
     </div>
   );
