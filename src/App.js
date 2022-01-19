@@ -5,13 +5,8 @@ import "./styles.css";
 export const generateMockDataFor30Days = () => {
   const mockData = [];
   for (let i = 0; i < 30; i++) {
-    const date = new Date(2022, 0, i + 1).toLocaleDateString().split("/");
-    const day = date[0];
-    const month = date[1];
-    const year = date[2];
-    const dateStr = `${month}/${day}/${year}`;
     mockData.push({
-      date: dateStr,
+      date:  new Date(2022, 0, i + 1).toLocaleDateString(),
       feature: "task 1",
       subject: "worked for on task 1",
       hours: 8,
