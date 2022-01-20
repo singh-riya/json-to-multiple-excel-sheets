@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Dashboard from "./components/Dashboard";
 import "./styles.css";
@@ -61,7 +62,9 @@ export default function App() {
       <button onClick={downloadTimesheet} style={{ fontSize: 60 }}>
         Download Timesheet
       </button>
-      <Dashboard data={data} />
+      <Box m={4} >
+        <Dashboard data={data} />
+      </Box>
     </div>
   );
 }

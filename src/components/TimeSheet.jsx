@@ -1,12 +1,24 @@
-import { Button, Grid, Typography } from '@mui/material';
-import React from 'react';
+
+import { Button, Checkbox, Grid, Input, InputAdornment, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, TextField, Typography } from '@mui/material';
+import React, { useState } from 'react';
 import {
+  getComparator,
   getDayName,
   isWithinWeek,
 } from "../utils/utils";
+import EnhancedTableHead from './EnhancedTableHead';
 import Pagination from "./Pagination";
 
 const TimeSheet = ({tableData, handleChange, isEditing, handleSave, pagination, unlock, setTablePagination}) => {
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('date');
+
+  const handleRequestSort = (_event, property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
   return (
     <Grid container spacing={2} className="sheet-container">
           <Grid item className="sheet-container__header">
@@ -26,25 +38,20 @@ const TimeSheet = ({tableData, handleChange, isEditing, handleSave, pagination, 
           </Grid>
 
           <Grid item className="sheet-container__header__table">
-            <div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date/Day</th>
-                    <th>Feature</th>
-                    <th>Subject</th>
-                    <th>Hours</th>
-                    <th>is on Leave?</th>
-                    <th>is Holiday?</th>
-                    <th>Eligible for comp off?</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <TableContainer sx={{ maxHeight: 800 }}>
+              <Table stickyHeader aria-label="sticky table">
+              <EnhancedTableHead
+                  onRequestSort={handleRequestSort}
+                  order={order}
+                  orderBy={orderBy}
+                />
+                <TableBody>
                   {(tableData || [])
                     .slice(
                       (pagination.currentPage - 1) * pagination.pageSize,
                       pagination.currentPage * pagination.pageSize
                     )
+                    .sort(getComparator(order, orderBy))
                     .map((item) => {
                       const {
                         date = new Date(),
@@ -58,63 +65,70 @@ const TimeSheet = ({tableData, handleChange, isEditing, handleSave, pagination, 
                       } = item || {};
 
                       return (
-                        <tr
+                        <TableRow
                           key={date}
                           className={(`${getDayName(date)}` === 'Sunday') ? "weekend-row" : "table-row" && (`${getDayName(date)}` === 'Saturday') ? "weekend-row" : "table-row"}
                         >
-                          <td>{`${date} | ${getDayName(date)}`}</td>
-                          <td>
-                            <textarea
-                              rows="2"
-                              multiple
+                          <TableCell>{`${date} | ${getDayName(date)}`}</TableCell>
+                          <TableCell>
+                            <TextField
+                              multiline
                               placeholder="Enter feature"
                               disabled={unlock ? false : !isWithinWeek(date) || isLeave}
                               name="feature"
                               onChange={(event) => handleChange(event, date)}
                               value={feature}
+                              variant="standard"
                             />
-                          </td>
-                          <td>
-                            <textarea
-                              rows="2"
+                          </TableCell>
+                          <TableCell>
+                            <TextField
                               type="text"
-                              multiple
+                              multiline
                               placeholder="Enter subject"
                               disabled={unlock ? false : !isWithinWeek(date) || isLeave}
                               name="subject"
                               onChange={(event) => handleChange(event, date)}
                               value={subject}
+                              variant="standard"
                             />
-                          </td>
-                          <td>
-                            <input
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              placeholder="Enter hours"
                               type="number"
                               disabled={unlock ? false : !isWithinWeek(date) || isLeave}
                               name="hours"
-                              onChange={(event) => handleChange(event, date)}
+                              onChange={(event) => {
+                                if (event.target.value > 0 && event.target.value < 11) {
+                                  handleChange(event, date);
+                                } 
+                              }}
                               value={hours}
+                              variant="standard"
+                              style={{ maxWidth: "fit-content" }}
                             />
-                          </td>
-                          <td>
-                            <input
+                          </TableCell>
+                          <TableCell>
+                            <Checkbox
                               type="checkbox"
                               disabled={unlock ? false : !isWithinWeek(date)}
                               name="isLeave"
                               checked={isLeave}
                               onChange={(event) => handleChange(event, date)}
                             />
-                          </td>
-                          <td>
-                            <input
+                          </TableCell>
+                          <TableCell>
+                            <Checkbox
                               type="checkbox"
                               disabled={unlock ? false : !isWithinWeek(date)}
                               name="isHoliday"
                               checked={isHoliday}
                               onChange={(event) => handleChange(event, date)}
                             />
-                          </td>
-                          <td>
-                            <input
+                          </TableCell>
+                          <TableCell>
+                            <Checkbox
                               type="checkbox"
                               disabled={
                                 unlock ? false : !isHoliday || isLeave || !isWithinWeek(date)
@@ -123,15 +137,24 @@ const TimeSheet = ({tableData, handleChange, isEditing, handleSave, pagination, 
                               onChange={(event) => handleChange(event, date)}
                               checked={isCompOff}
                             />
-                          </td>
-                        </tr>
+                          </TableCell>
+                        </TableRow>
                       );
                     })}
-                </tbody>
-              </table>
-            </div>
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Grid>
-          <Pagination {...pagination} setTablePagination={setTablePagination} />
+          {/* <Pagination {...pagination} setTablePagination={setTablePagination} /> */}
+          <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={pagination.total}
+              rowsPerPage={pagination.rowsPerPage}
+              page={pagination.currentPage}
+              onPageChange={setTablePagination}
+              // onRowsPerPageChange={handleChangeRowsPerPage}
+            />
         </Grid>
   );
 };

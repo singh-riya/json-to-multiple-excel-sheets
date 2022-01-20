@@ -1,6 +1,19 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Grid, TextField, Typography } from "@mui/material";
 import React from "react";
 import { maxDateRange, minDateRange } from "../utils/utils";
+import MuiButton from "@mui/material/Button";
+import {withStyles} from "@mui/styles";
+
+const Button = withStyles({
+  root: {
+    // color: "white",
+    // backgroundColor: "#3f51b5",
+    // "&:hover": {
+    //   backgroundColor: "#3f51b5",
+    // },
+    padding: "-10px",
+  },
+})(MuiButton);
 
 const TimeSheetToolbar = ({
   loadData,
