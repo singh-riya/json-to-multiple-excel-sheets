@@ -1,10 +1,6 @@
-import { Box, Grid, Paper } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import {
-  checkboxFields,
-  isWithinWeek,
-  transformData,
-} from "../utils/utils";
+import { checkboxFields, isWithinWeek, transformData } from "../utils/utils";
 import "./Dashboard.css";
 import TimeSheet from "./TimeSheet";
 import TimeSheetToolbar from "./TimeSheetToolbar";
@@ -13,10 +9,8 @@ const Dashboard = ({ data = {} }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [unlock, setUnlock] = useState(false);
   const [pagination, setPagination] = useState({
-    currentPage: 1,
+    currentPage: 0,
     pageSize: 7,
-    total: data?.timesheet?.length || 0,
-    rowsPerPage: [7, 10, 15, 30],
   });
 
   const [tableData, setTableData] = useState([]);
@@ -27,6 +21,14 @@ const Dashboard = ({ data = {} }) => {
 
   const setTablePagination = (prop, value) => {
     setPagination({ ...pagination, [prop]: value });
+  };
+
+  const handleChangePage = (_event, newPage) => {
+    setTablePagination("currentPage", newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setTablePagination("pageSize", parseInt(event.target.value, 10));
   };
 
   const applySort = (table) => {
@@ -58,7 +60,7 @@ const Dashboard = ({ data = {} }) => {
 
   useEffect(() => {
     loadData();
-  }, [data, pagination]);
+  }, [data]);
 
   const handleSave = () => {
     console.log({ tableData });
@@ -90,7 +92,9 @@ const Dashboard = ({ data = {} }) => {
     e.preventDefault();
     const { fromDate, toDate } = dateState;
     const { timesheet = [] } = data;
-    const fromDateObj = new Date(fromDate).setDate(new Date(fromDate).getDate() - 1);
+    const fromDateObj = new Date(fromDate).setDate(
+      new Date(fromDate).getDate() - 1
+    );
     const toDateObj = new Date(toDate);
     const filteredData = timesheet.filter((item) => {
       const dateObj = new Date(item.date);
@@ -106,35 +110,42 @@ const Dashboard = ({ data = {} }) => {
   };
 
   return (
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <h1>Timesheet Dashboard</h1>
-        </Grid>
-        <Grid item xs={12} >
-        <TimeSheetToolbar 
-          loadData={loadData}
-          dateState={dateState}
-          handleDateChange={handleDateChange}
-          applyDateFilter={applyDateFilter}
-          handleUnlock={handleUnlock}
-          unlock={unlock}
-
-        />
-        </Grid>
-
-        <Grid item xs={12} >
-        <TimeSheet  
-          tableData={tableData}
-          handleChange={handleChange}
-          isEditing={isEditing}
-          handleSave={handleSave}
-          unlock={unlock}
-          pagination={pagination}
-          setTablePagination={setTablePagination}
-        />
-        </Grid>
-        
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <h1>Timesheet Dashboard</h1>
       </Grid>
+      <Grid item xs={12}>
+        <Paper>
+        <Grid container justifyContent="center" alignItems="center" spacing={4}>
+          <Grid item xs={12}>
+            <TimeSheetToolbar
+              loadData={loadData}
+              dateState={dateState}
+              handleDateChange={handleDateChange}
+              applyDateFilter={applyDateFilter}
+              handleUnlock={handleUnlock}
+              unlock={unlock}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TimeSheet
+              tableData={tableData}
+              handleChange={handleChange}
+              isEditing={isEditing}
+              handleSave={handleSave}
+              unlock={unlock}
+              pagination={pagination}
+              handleChangePage={handleChangePage}
+              handleChangeRowsPerPage={handleChangeRowsPerPage}
+              setTablePagination={setTablePagination}
+              totalCount={data?.timesheet?.length}
+            />
+          </Grid>
+        </Grid>
+        </Paper>
+      </Grid>
+    </Grid>
   );
 };
 

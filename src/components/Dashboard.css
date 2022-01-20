@@ -1,40 +1,6 @@
 body {
   height: 120vh;
-}
-
-.sheet-container__header__download-btn {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-}
-
-.sheet-container {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  /* padding: 20px; */
-  background-color: #d9e2f0;
-  /* margin-top: 20px; */
-  flex-direction: column;
-}
-
-.sheet-container__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.sheet-container__header__table {
-  /* display: flex;
-  justify-content: space-between;
-  align-items: center; */
-  width: 100%;
-}
-
-table {
-  width: 100%;
+  background-color: #f5f5f5;
 }
 
 .table-row {

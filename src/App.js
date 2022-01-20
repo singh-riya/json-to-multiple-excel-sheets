@@ -59,9 +59,9 @@ export default function App() {
 
   return (
     <div className="App">
-      <button onClick={downloadTimesheet} style={{ fontSize: 60 }}>
+      {/* <button onClick={downloadTimesheet} style={{ fontSize: 60 }}>
         Download Timesheet
-      </button>
+      </button> */}
       <Box m={4} >
         <Dashboard data={data} />
       </Box>

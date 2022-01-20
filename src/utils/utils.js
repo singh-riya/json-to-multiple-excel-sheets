@@ -79,8 +79,10 @@ export const getWeekRange = (dateStr = new Date()) => {
 
 export const isWithinWeek = (date = new Date()) => {
   const { fromDate, toDate } = getWeekRange();
+  const fromActualDate = new Date(fromDate).setDate(new Date(fromDate).getDate() + 1);
+  const toActualDate = new Date(toDate).setDate(new Date(toDate).getDate() + 1);
   return (
-    new Date(date) >= new Date(fromDate) && new Date(date) <= new Date(toDate)
+    new Date(date) >= new Date(fromActualDate) && new Date(date) <= new Date(toActualDate)
   );
 };
 

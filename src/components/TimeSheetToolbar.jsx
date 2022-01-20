@@ -1,16 +1,16 @@
-import { Grid, TextField, Typography } from "@mui/material";
+import { Grid, IconButton, TextField, Tooltip } from "@mui/material";
 import React from "react";
 import { maxDateRange, minDateRange } from "../utils/utils";
 import MuiButton from "@mui/material/Button";
 import {withStyles} from "@mui/styles";
+import SimCardDownloadIcon from '@mui/icons-material/SimCardDownload';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 const Button = withStyles({
   root: {
-    // color: "white",
-    // backgroundColor: "#3f51b5",
-    // "&:hover": {
-    //   backgroundColor: "#3f51b5",
-    // },
     padding: "-10px",
   },
 })(MuiButton);
@@ -87,8 +87,9 @@ const TimeSheetToolbar = ({
                   variant='contained'
                   type='button'
                   onClick={() => loadData(true)}
+                  size='small'
                 >
-                  Clear filter
+                  Clear <FilterAltOffIcon />
                 </Button>
               </Grid>
               <Grid item>
@@ -96,14 +97,16 @@ const TimeSheetToolbar = ({
                   variant='contained'
                   type='button'
                   onClick={applyDateFilter}
+                  size='small'
                 >
-                  Show Sheet
+                  Show  <FilterAltIcon />
                 </Button>
               </Grid>
               <Grid item>
                 <Button
                   variant='contained'
                   onClick={() => loadData(false, true)}
+                  size='small'
                 >
                   Current Week
                 </Button>
@@ -116,12 +119,16 @@ const TimeSheetToolbar = ({
       <Grid item>
         <Grid container spacing={2} alignItems='center'>
           <Grid item>
-            <Button variant='contained' type='button' onClick={handleUnlock}>
-              {unlock ? "Lock Sheet" : "Unlock Sheet"}
-            </Button>
+            <Tooltip title={unlock ? 'Unlock' : 'Lock'} arrow >
+            <IconButton variant='contained' onClick={handleUnlock} size='small' >
+              {unlock ? <LockOpenIcon color='error' fontSize="large" /> : <LockIcon color='warning' fontSize="large" />}
+            </IconButton>
+            </Tooltip>
           </Grid>
           <Grid item>
-            <Button variant='contained'>Download sheet</Button>
+            <Tooltip title='Download Sheet' arrow >
+            <IconButton variant='contained' size='small'><SimCardDownloadIcon color='success' fontSize="large" /></IconButton>
+            </Tooltip>
           </Grid>
         </Grid>
       </Grid>
