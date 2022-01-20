@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Dashboard from "./components/Dashboard";
 import "./styles.css";
 
@@ -16,7 +16,7 @@ export const generateMockDataFor30Days = () => {
 };
 
 export default function App() {
-  const [data, setData] = React.useState([]);
+  const [data, setData] = useState([]);
 
   /**
    * @description This function downdloads the file from blob recieved from server

@@ -1,20 +1,17 @@
+import { Box, Grid, Paper } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
   checkboxFields,
-  firstdayWeek,
-  getDayName,
-  getWeekRange,
   isWithinWeek,
-  lastdayWeek,
-  maxDateRange,
-  minDateRange,
   transformData,
 } from "../utils/utils";
 import "./Dashboard.css";
-import Pagination from "./Pagination";
+import TimeSheet from "./TimeSheet";
+import TimeSheetToolbar from "./TimeSheetToolbar";
 
 const Dashboard = ({ data = {} }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [unlock, setUnlock] = useState(false);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     pageSize: 7,
@@ -93,7 +90,7 @@ const Dashboard = ({ data = {} }) => {
     e.preventDefault();
     const { fromDate, toDate } = dateState;
     const { timesheet = [] } = data;
-    const fromDateObj = new Date(fromDate);
+    const fromDateObj = new Date(fromDate).setDate(new Date(fromDate).getDate() - 1);
     const toDateObj = new Date(toDate);
     const filteredData = timesheet.filter((item) => {
       const dateObj = new Date(item.date);
@@ -102,179 +99,42 @@ const Dashboard = ({ data = {} }) => {
     setTableData(applySort(filteredData));
   };
 
+  const handleUnlock = () => {
+    setUnlock((prev) => !prev);
+    console.log({ unlock });
+    setIsEditing((prev) => !prev);
+  };
+
   return (
-    <div>
-      <div>
-        <h1>Timesheet Dashboard</h1>
-      </div>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <h1>Timesheet Dashboard</h1>
+        </Grid>
+        <Grid item xs={12} >
+        <TimeSheetToolbar 
+          loadData={loadData}
+          dateState={dateState}
+          handleDateChange={handleDateChange}
+          applyDateFilter={applyDateFilter}
+          handleUnlock={handleUnlock}
+          unlock={unlock}
 
-      <div className="sheet-btns">
-        <div className="sheet-btns__left">
-          <div className="sheet-btns__left__from">
-            <label htmlFor="From">From:</label>
-            <input
-              type="date"
-              id="From"
-              name="fromDate"
-              min={minDateRange.toString()}
-              value={dateState.fromDate}
-              max={dateState.toDate || maxDateRange.toString()}
-              onChange={handleDateChange}
-            />
-          </div>
-          <div className="sheet-btns__left__to">
-            <label htmlFor="To">To:</label>
-            <input
-              type="date"
-              id="To"
-              name="toDate"
-              value={dateState.toDate}
-              min={dateState.fromDate}
-              max={maxDateRange.toString()}
-              onChange={handleDateChange}
-            />
-          </div>
-          <div className="sheet-btns__left__show-sheet-btn">
-            <button type="button" onClick={() => loadData(true)}>
-              Clear filter
-            </button>
-            <button type="button" onClick={applyDateFilter}>
-              Show Sheet
-            </button>
-            <button onClick={() => loadData(false, true)}>Current Week</button>
-          </div>
-        </div>
+        />
+        </Grid>
 
-        <div className="sheet-btns__right">
-          <button>Unlock Sheet</button>
-        </div>
-      </div>
-
-      <div className="sheet-container">
-        <div className="sheet-container__header">
-          <div className="sheet-container__header__h3">
-            <h3>
-              Weekly Timesheet
-              {/* Weekly Timesheet ({firstdayWeek}&nbsp;-&nbsp;{lastdayWeek}) */}
-            </h3>
-          </div>
-          <div className="sheet-container__header__download-btn">
-            <button disabled={!isEditing} onClick={handleSave}>
-              Save
-            </button>
-            <button>Download sheet</button>
-          </div>
-        </div>
-
-        <div className="sheet-container__header__table">
-          <div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Date/Day</th>
-                  <th>Feature</th>
-                  <th>Subject</th>
-                  <th>Hours</th>
-                  <th>is on Leave?</th>
-                  <th>is Holiday?</th>
-                  <th>Eligible for comp off?</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(tableData || [])
-                  .slice(
-                    (pagination.currentPage - 1) * pagination.pageSize,
-                    pagination.currentPage * pagination.pageSize
-                  )
-                  .map((item) => {
-                    const {
-                      date = new Date(),
-                      feature = "",
-                      subject = "",
-                      hours = 0,
-                      isLeave = false,
-                      isHoliday = false,
-                      isWeekend = false,
-                      isCompOff = false,
-                    } = item || {};
-
-                    return (
-                      <tr
-                        key={date}
-                        className={isWeekend ? "weekend-row" : "table-row"}
-                      >
-                        <td>{`${date} | ${getDayName(date)}`}</td>
-                        <td>
-                          <textarea
-                            rows="2"
-                            multiple
-                            placeholder="Enter feature"
-                            disabled={!isWithinWeek(date) || isLeave}
-                            name="feature"
-                            onChange={(event) => handleChange(event, date)}
-                            value={feature}
-                          />
-                        </td>
-                        <td>
-                          <textarea
-                            rows="2"
-                            type="text"
-                            multiple
-                            placeholder="Enter subject"
-                            disabled={!isWithinWeek(date) || isLeave}
-                            name="subject"
-                            onChange={(event) => handleChange(event, date)}
-                            value={subject}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            disabled={!isWithinWeek(date) || isLeave}
-                            name="hours"
-                            onChange={(event) => handleChange(event, date)}
-                            value={hours}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            disabled={!isWithinWeek(date)}
-                            name="isLeave"
-                            checked={isLeave}
-                            onChange={(event) => handleChange(event, date)}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            disabled={!isWithinWeek(date)}
-                            name="isHoliday"
-                            checked={isHoliday}
-                            onChange={(event) => handleChange(event, date)}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            disabled={
-                              !isHoliday || isLeave || !isWithinWeek(date)
-                            }
-                            name="isCompOff"
-                            onChange={(event) => handleChange(event, date)}
-                            checked={isCompOff}
-                          />
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <Pagination {...pagination} setTablePagination={setTablePagination} />
-    </div>
+        <Grid item xs={12} >
+        <TimeSheet  
+          tableData={tableData}
+          handleChange={handleChange}
+          isEditing={isEditing}
+          handleSave={handleSave}
+          unlock={unlock}
+          pagination={pagination}
+          setTablePagination={setTablePagination}
+        />
+        </Grid>
+        
+      </Grid>
   );
 };
 

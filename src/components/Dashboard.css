@@ -2,38 +2,20 @@ body {
   height: 120vh;
 }
 
-.sheet-btns {
+.sheet-container__header__download-btn {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 20px;
-  background-color: #abc1f1;
-
-}
-
-.sheet-btns__left {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding-right: 300px
-}
-
-.sheet-btns__left__show-sheet-btn {
-  padding: 10px;
-}
-
-button {
-  padding: 5px;
-  margin: 5px;
+  width: 100%;
 }
 
 .sheet-container {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 20px;
+  /* padding: 20px; */
   background-color: #d9e2f0;
-  margin-top: 20px;
+  /* margin-top: 20px; */
   flex-direction: column;
 }
 
