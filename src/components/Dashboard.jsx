@@ -1,4 +1,4 @@
-import { Grid, Paper } from "@mui/material";
+import { Grid, Paper, Divider } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { checkboxFields, isWithinWeek, transformData } from "../utils/utils";
 import "./Dashboard.css";
@@ -115,8 +115,8 @@ const Dashboard = ({ data = {} }) => {
         <h1>Timesheet Dashboard</h1>
       </Grid>
       <Grid item xs={12}>
-        <Paper>
-        <Grid container justifyContent="center" alignItems="center" spacing={4}>
+        <Paper elevation={24}>
+        <Grid container justifyContent="center" alignItems="center" spacing={4} style={{padding: "20px"}}>
           <Grid item xs={12}>
             <TimeSheetToolbar
               loadData={loadData}
@@ -126,6 +126,7 @@ const Dashboard = ({ data = {} }) => {
               handleUnlock={handleUnlock}
               unlock={unlock}
             />
+            <Divider style={{padding: '10px'}}/>
           </Grid>
 
           <Grid item xs={12}>

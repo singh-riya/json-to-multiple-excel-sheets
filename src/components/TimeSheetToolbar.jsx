@@ -88,6 +88,7 @@ const TimeSheetToolbar = ({
                   type='button'
                   onClick={() => loadData(true)}
                   size='small'
+                  disabled={!dateState.fromDate || !dateState.toDate}
                 >
                   Clear <FilterAltOffIcon />
                 </Button>
@@ -98,6 +99,7 @@ const TimeSheetToolbar = ({
                   type='button'
                   onClick={applyDateFilter}
                   size='small'
+                  disabled={!dateState.fromDate || !dateState.toDate}
                 >
                   Show  <FilterAltIcon />
                 </Button>

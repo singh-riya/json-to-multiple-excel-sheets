@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { getComparator, getDayName, isWithinWeek } from "../utils/utils";
+import { firstdayWeek, getComparator, getDayName, isWithinWeek, lastdayWeek } from "../utils/utils";
 import EnhancedTableHead from "./EnhancedTableHead";
 
 const TimeSheet = ({
@@ -45,8 +45,7 @@ const TimeSheet = ({
         >
           <Grid item>
             <Typography fontWeight={600}>
-              Weekly Timesheet
-              {/* Weekly Timesheet ({firstdayWeek}&nbsp;-&nbsp;{lastdayWeek}) */}
+              {isWithinWeek(new Date()) ? ` Weekly Timesheet (${firstdayWeek} to ${lastdayWeek})` : "Past Weeks"}
             </Typography>
           </Grid>
           <Grid item>
@@ -170,11 +169,7 @@ const TimeSheet = ({
                         <Checkbox
                           type='checkbox'
                           disabled={
-                            unlock
-                              ? false
-                              : isLeave || !isHoliday || !isWithinWeek(date)
-                              ? unlock
-                              : true
+                            isHoliday ? false : true
                           }
                           name='isCompOff'
                           onChange={(event) => handleChange(event, date)}
