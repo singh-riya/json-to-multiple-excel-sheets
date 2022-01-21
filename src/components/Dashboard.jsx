@@ -1,4 +1,4 @@
-import { Grid, Paper, Divider } from "@mui/material";
+import { Grid, Paper, Divider, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { checkboxFields, isWithinWeek, transformData } from "../utils/utils";
 import "./Dashboard.css";
@@ -47,7 +47,7 @@ const Dashboard = ({ data = {} }) => {
       (item) => isWithinWeek(item?.date) && item
     );
 
-    const table = currentWeek ? sevenDays : updatedTimesheet;
+    const table = currentWeek ? updatedTimesheet : sevenDays;
     setTableData(applySort(table));
 
     if (clearFilter) {
@@ -121,10 +121,11 @@ const Dashboard = ({ data = {} }) => {
             <TimeSheetToolbar
               loadData={loadData}
               dateState={dateState}
-              handleDateChange={handleDateChange}
+              // handleDateChange={handleDateChange}
               applyDateFilter={applyDateFilter}
               handleUnlock={handleUnlock}
               unlock={unlock}
+              setDateState={setDateState}
             />
             <Divider style={{padding: '10px'}}/>
           </Grid>

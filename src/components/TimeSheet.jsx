@@ -44,7 +44,7 @@ const TimeSheet = ({
           alignItems='center'
         >
           <Grid item>
-            <Typography fontWeight={600}>
+            <Typography >
               {isWithinWeek(new Date()) ? ` Weekly Timesheet (${firstdayWeek} to ${lastdayWeek})` : "Past Weeks"}
             </Typography>
           </Grid>

@@ -1,5 +1,5 @@
-import { Grid, IconButton, TextField, Tooltip } from "@mui/material";
-import React from "react";
+import { Grid, IconButton, Tooltip } from "@mui/material";
+import React, { useState } from "react";
 import { maxDateRange, minDateRange } from "../utils/utils";
 import MuiButton from "@mui/material/Button";
 import {withStyles} from "@mui/styles";
@@ -8,6 +8,8 @@ import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 const Button = withStyles({
   root: {
@@ -18,11 +20,26 @@ const Button = withStyles({
 const TimeSheetToolbar = ({
   loadData,
   dateState,
-  handleDateChange,
+  // handleDateChange,
   applyDateFilter,
   handleUnlock,
   unlock,
+  setDateState
 }) => {
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
+
+  const handleFromDateChange = (e) => {
+    console.log({e});
+    setDateState({ ...dateState, "fromDate": e });
+    setFromDate(e);
+  };
+
+  const handleToDateChange = (e) => {
+    console.log({e});
+    setDateState({ ...dateState, "toDate": e });
+    setToDate(e);
+  };
   return (
     <Grid
       container
@@ -39,40 +56,39 @@ const TimeSheetToolbar = ({
               spacing={2}
               justifyContent='center'
             >
+              
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid item>
-                <TextField
-                  label='From Date'
+                <KeyboardDatePicker
                   id='From'
-                  type='date'
-                  sx={{ width: 220 }}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  name='fromDate'
-                  value={dateState.fromDate}
+                  value={fromDate}
                   mindate={minDateRange.toString()}
-                  maxdate={dateState.toDate || maxDateRange.toString()}
-                  onChange={handleDateChange}
+                  maxdate={ maxDateRange.toString()}
+                  onChange={handleFromDateChange}
+                  inputVariant="outlined"
+                  format="MM/dd/yyyy"
+                  disableFuture
                 />
               </Grid>
+              </MuiPickersUtilsProvider>
 
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid item>
-                <TextField
-                  label='To Date'
-                  type='date'
+                <KeyboardDatePicker
                   id='To'
                   name='toDate'
-                  value={dateState.toDate}
-                  min={dateState.fromDate}
-                  max={maxDateRange.toString()}
-                  onChange={handleDateChange}
-                  sx={{ width: 220 }}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
+                  value={toDate}
+                  onChange={handleToDateChange}
+                  inputVariant="outlined"
+                  format="MM/dd/yyyy"
+                  disableFuture
                 />
               </Grid>
+              </MuiPickersUtilsProvider>
+
+
             </Grid>
+
           </Grid>
 
           <Grid item>
@@ -104,7 +120,7 @@ const TimeSheetToolbar = ({
                   Show  <FilterAltIcon />
                 </Button>
               </Grid>
-              <Grid item>
+              {/* <Grid item>
                 <Button
                   variant='contained'
                   onClick={() => loadData(false, true)}
@@ -112,7 +128,7 @@ const TimeSheetToolbar = ({
                 >
                   Current Week
                 </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Grid>
         </Grid>

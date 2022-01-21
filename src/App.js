@@ -2,6 +2,8 @@ import { Box } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Dashboard from "./components/Dashboard";
 import "./styles.css";
+import { ThemeProvider } from "@material-ui/styles";
+import theme from "./theme";
 
 export const generateMockDataFor30Days = () => {
   const mockData = [];
@@ -59,12 +61,15 @@ export default function App() {
 
   return (
     <div className="App">
+      
+      {/* <ThemeProvider theme={theme}> */}
       {/* <button onClick={downloadTimesheet} style={{ fontSize: 60 }}>
         Download Timesheet
       </button> */}
       <Box m={4} >
         <Dashboard data={data} />
       </Box>
+      {/* </ThemeProvider> */}
     </div>
   );
 }
