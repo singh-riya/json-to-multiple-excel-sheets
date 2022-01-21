@@ -1,15 +1,42 @@
 import React from "react";
 import {
-  Box,
   TableCell,
   TableHead,
   TableRow,
   TableSortLabel,
   Typography,
-} from "@mui/material";
-import { visuallyHidden } from "@mui/utils";
+} from "@material-ui/core";
+import { withStyles, makeStyles } from "@material-ui/styles";
+
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
+
+const useStyles = makeStyles((theme) => ({
+  visuallyHidden: {
+    border: 0,
+    clip: "rect(0 0 0 0)",
+    height: 1,
+    margin: -1,
+    overflow: "hidden",
+    padding: 0,
+    position: "absolute",
+    top: 20,
+    width: 1,
+  },
+  tHead: {
+    backgroundColor: theme.palette.primary.main,
+  },
+}));
 
 const EnhancedTableHead = ({ orderBy, order, onRequestSort }) => {
+  const classes = useStyles();
   const createSortHandler = (property) => (event) => {
     console.log({ property, event });
     onRequestSort(event, property);
@@ -45,13 +72,13 @@ const EnhancedTableHead = ({ orderBy, order, onRequestSort }) => {
       id: "isCompOff",
       label: "Eligible for comp off?",
     },
-  ]
+  ];
 
   return (
-    <TableHead>
+    <TableHead color='primary'>
       <TableRow>
         {columns.map((headCell) => (
-          <TableCell
+          <StyledTableCell
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
             sortDirection={orderBy === headCell.id ? order : false}
@@ -61,14 +88,16 @@ const EnhancedTableHead = ({ orderBy, order, onRequestSort }) => {
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
-              <Typography variant="h6" style={{ fontSize: "14px" }}>{headCell.label}</Typography>
+              <Typography variant='h6' style={{ fontSize: "14px" }}>
+                {headCell.label}
+              </Typography>
               {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
+                <span className={classes.visuallyHidden}>
                   {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
+                </span>
               ) : null}
             </TableSortLabel>
-          </TableCell>
+          </StyledTableCell>
         ))}
       </TableRow>
     </TableHead>

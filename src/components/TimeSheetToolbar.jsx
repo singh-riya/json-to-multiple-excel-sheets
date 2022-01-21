@@ -1,15 +1,16 @@
-import { Grid, IconButton, Tooltip } from "@mui/material";
-import React, { useState } from "react";
+import { Grid, IconButton, Tooltip } from "@material-ui/core";
+import React from "react";
 import { maxDateRange, minDateRange } from "../utils/utils";
-import MuiButton from "@mui/material/Button";
-import {withStyles} from "@mui/styles";
-import SimCardDownloadIcon from '@mui/icons-material/SimCardDownload';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import MuiButton from "@material-ui/core/Button";
+import { withStyles } from "@material-ui/core/styles";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import LockIcon from "@material-ui/icons/Lock";
+import LockOpenIcon from "@material-ui/icons/LockOpen";
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
 
 const Button = withStyles({
   root: {
@@ -20,26 +21,13 @@ const Button = withStyles({
 const TimeSheetToolbar = ({
   loadData,
   dateState,
-  // handleDateChange,
   applyDateFilter,
   handleUnlock,
   unlock,
-  setDateState
+  handleDateChange,
+  toggleIcon,
+  setTheme,
 }) => {
-  const [fromDate, setFromDate] = useState(new Date());
-  const [toDate, setToDate] = useState(new Date());
-
-  const handleFromDateChange = (e) => {
-    console.log({e});
-    setDateState({ ...dateState, "fromDate": e });
-    setFromDate(e);
-  };
-
-  const handleToDateChange = (e) => {
-    console.log({e});
-    setDateState({ ...dateState, "toDate": e });
-    setToDate(e);
-  };
   return (
     <Grid
       container
@@ -56,39 +44,35 @@ const TimeSheetToolbar = ({
               spacing={2}
               justifyContent='center'
             >
-              
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid item>
-                <KeyboardDatePicker
-                  id='From'
-                  value={fromDate}
-                  mindate={minDateRange.toString()}
-                  maxdate={ maxDateRange.toString()}
-                  onChange={handleFromDateChange}
-                  inputVariant="outlined"
-                  format="MM/dd/yyyy"
-                  disableFuture
-                />
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    clearable
+                    value={dateState.fromDate}
+                    mindate={minDateRange.toString()}
+                    maxdate={maxDateRange.toString()}
+                    onChange={(date) => handleDateChange("fromDate", date)}
+                    inputVariant='outlined'
+                    format='MM/dd/yyyy'
+                    disableFuture
+                    autoOk
+                  />
+                </MuiPickersUtilsProvider>
               </Grid>
-              </MuiPickersUtilsProvider>
-
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid item>
-                <KeyboardDatePicker
-                  id='To'
-                  name='toDate'
-                  value={toDate}
-                  onChange={handleToDateChange}
-                  inputVariant="outlined"
-                  format="MM/dd/yyyy"
-                  disableFuture
-                />
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    clearable
+                    value={dateState.toDate}
+                    onChange={(date) => handleDateChange("toDate", date)}
+                    inputVariant='outlined'
+                    format='MM/dd/yyyy'
+                    disableFuture
+                    autoOk
+                  />
+                </MuiPickersUtilsProvider>
               </Grid>
-              </MuiPickersUtilsProvider>
-
-
             </Grid>
-
           </Grid>
 
           <Grid item>
@@ -105,8 +89,9 @@ const TimeSheetToolbar = ({
                   onClick={() => loadData(true)}
                   size='small'
                   disabled={!dateState.fromDate || !dateState.toDate}
+                  color='primary'
                 >
-                  Clear <FilterAltOffIcon />
+                  Clear
                 </Button>
               </Grid>
               <Grid item>
@@ -116,19 +101,21 @@ const TimeSheetToolbar = ({
                   onClick={applyDateFilter}
                   size='small'
                   disabled={!dateState.fromDate || !dateState.toDate}
+                  color='primary'
                 >
-                  Show  <FilterAltIcon />
+                  Show
                 </Button>
               </Grid>
-              {/* <Grid item>
+              <Grid item>
                 <Button
                   variant='contained'
                   onClick={() => loadData(false, true)}
                   size='small'
+                  color='primary'
                 >
                   Current Week
                 </Button>
-              </Grid> */}
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
@@ -137,15 +124,37 @@ const TimeSheetToolbar = ({
       <Grid item>
         <Grid container spacing={2} alignItems='center'>
           <Grid item>
-            <Tooltip title={unlock ? 'Unlock' : 'Lock'} arrow >
-            <IconButton variant='contained' onClick={handleUnlock} size='small' >
-              {unlock ? <LockOpenIcon color='error' fontSize="large" /> : <LockIcon color='warning' fontSize="large" />}
-            </IconButton>
+            <Tooltip title={unlock ? "Unlock" : "Lock"} arrow>
+              <IconButton
+                variant='contained'
+                onClick={handleUnlock}
+                size='small'
+              >
+                {unlock ? (
+                  <LockOpenIcon color='error' fontSize='large' />
+                ) : (
+                  <LockIcon color='warning' fontSize='large' />
+                )}
+              </IconButton>
             </Tooltip>
           </Grid>
           <Grid item>
-            <Tooltip title='Download Sheet' arrow >
-            <IconButton variant='contained' size='small'><SimCardDownloadIcon color='success' fontSize="large" /></IconButton>
+            <Tooltip title='Download Sheet' arrow>
+              <IconButton variant='contained' size='small'>
+                <GetAppIcon color='primary' fontSize='large' />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip title='Switch theme' arrow>
+              <IconButton
+                edge='end'
+                color='inherit'
+                aria-label='mode'
+                onClick={() => setTheme((prev) => !prev)}
+              >
+                {toggleIcon}
+              </IconButton>
             </Tooltip>
           </Grid>
         </Grid>

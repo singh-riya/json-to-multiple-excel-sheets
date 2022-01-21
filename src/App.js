@@ -1,15 +1,17 @@
-import { Box } from "@mui/material";
+import { Box } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import Dashboard from "./components/Dashboard";
 import "./styles.css";
-import { ThemeProvider } from "@material-ui/styles";
-import theme from "./theme";
+import { ThemeProvider, createTheme } from "@material-ui/core/styles";
+import { dark, light, theme } from "./theme";
+import Brightness3Icon from "@material-ui/icons/Brightness3";
+import Brightness7Icon from "@material-ui/icons/Brightness7";
 
 export const generateMockDataFor30Days = () => {
   const mockData = [];
   for (let i = 0; i < 30; i++) {
     mockData.push({
-      date:  new Date(2022, 0, i + 1).toLocaleDateString(),
+      date: new Date(2022, 0, i + 1).toLocaleDateString(),
       feature: "task 1",
       subject: "worked for on task 1",
       hours: 8,
@@ -19,6 +21,8 @@ export const generateMockDataFor30Days = () => {
 };
 
 export default function App() {
+  const [theme, setTheme] = useState(true);
+  const icon = !theme ? <Brightness7Icon /> : <Brightness3Icon />;
   const [data, setData] = useState([]);
 
   /**
@@ -60,16 +64,15 @@ export default function App() {
   }, []);
 
   return (
-    <div className="App">
-      
-      {/* <ThemeProvider theme={theme}> */}
+    <div className='App'>
       {/* <button onClick={downloadTimesheet} style={{ fontSize: 60 }}>
         Download Timesheet
       </button> */}
-      <Box m={4} >
-        <Dashboard data={data} />
-      </Box>
-      {/* </ThemeProvider> */}
+      <ThemeProvider theme={createTheme(theme ? light : dark)}>
+        <Box m={4}>
+          <Dashboard data={data} setTheme={setTheme} toggleIcon={icon} />
+        </Box>
+      </ThemeProvider>
     </div>
   );
 }

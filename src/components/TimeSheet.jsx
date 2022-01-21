@@ -10,10 +10,29 @@ import {
   TableRow,
   TextField,
   Typography,
-} from "@mui/material";
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 import React, { useState } from "react";
-import { firstdayWeek, getComparator, getDayName, isWithinWeek, lastdayWeek } from "../utils/utils";
+import {
+  firstdayWeek,
+  getComparator,
+  getDayName,
+  isWithinWeek,
+  lastdayWeek,
+} from "../utils/utils";
 import EnhancedTableHead from "./EnhancedTableHead";
+
+const useStyles = makeStyles((theme) => ({
+  todayRow: {
+    backgroundColor: theme.palette.secondary.main,
+  },
+  weekendRow: {
+    backgroundColor: theme.palette.primary.grey,
+  },
+  normalRow: {
+    backgroundColor: theme.palette.secondary.white,
+  },
+}));
 
 const TimeSheet = ({
   tableData,
@@ -27,6 +46,7 @@ const TimeSheet = ({
 }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("date");
+  const classes = useStyles();
 
   const handleRequestSort = (_event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -35,8 +55,8 @@ const TimeSheet = ({
   };
 
   return (
-    <Grid container direction="column" spacing={2} >
-      <Grid item >
+    <Grid container direction='column' spacing={2}>
+      <Grid item>
         <Grid
           container
           spacing={2}
@@ -44,8 +64,10 @@ const TimeSheet = ({
           alignItems='center'
         >
           <Grid item>
-            <Typography >
-              {isWithinWeek(new Date()) ? ` Weekly Timesheet (${firstdayWeek} to ${lastdayWeek})` : "Past Weeks"}
+            <Typography>
+              {isWithinWeek(new Date())
+                ? ` Weekly Timesheet (${firstdayWeek} to ${lastdayWeek})`
+                : "Past Weeks"}
             </Typography>
           </Grid>
           <Grid item>
@@ -54,6 +76,7 @@ const TimeSheet = ({
               disabled={!isEditing}
               onClick={handleSave}
               size='small'
+              color='primary'
             >
               Save
             </Button>
@@ -91,11 +114,10 @@ const TimeSheet = ({
                     <TableRow
                       key={date}
                       className={
-                        `${getDayName(date)}` === "Sunday"
-                          ? "weekend-row"
-                          : "table-row" && `${getDayName(date)}` === "Saturday"
-                          ? "weekend-row"
-                          : "table-row"
+                        getDayName(date) === "Sunday" ||
+                        getDayName(date) === "Saturday"
+                          ? classes.weekendRow
+                          : classes.normalRow
                       }
                     >
                       <TableCell>{`${date} | ${getDayName(date)}`}</TableCell>
@@ -150,7 +172,11 @@ const TimeSheet = ({
                       <TableCell>
                         <Checkbox
                           type='checkbox'
-                          disabled={unlock ? false : !isWithinWeek(date)}
+                          disabled={
+                            unlock
+                              ? isHoliday
+                              : !isWithinWeek(date) || isHoliday
+                          }
                           name='isLeave'
                           checked={isLeave}
                           onChange={(event) => handleChange(event, date)}
@@ -159,7 +185,9 @@ const TimeSheet = ({
                       <TableCell>
                         <Checkbox
                           type='checkbox'
-                          disabled={unlock ? false : !isWithinWeek(date)}
+                          disabled={
+                            unlock ? isLeave : !isWithinWeek(date) || isLeave
+                          }
                           name='isHoliday'
                           checked={isHoliday}
                           onChange={(event) => handleChange(event, date)}
@@ -168,9 +196,7 @@ const TimeSheet = ({
                       <TableCell>
                         <Checkbox
                           type='checkbox'
-                          disabled={
-                            isHoliday ? false : true
-                          }
+                          disabled={isHoliday ? false : true}
                           name='isCompOff'
                           onChange={(event) => handleChange(event, date)}
                           checked={isCompOff}
